@@ -1,0 +1,88 @@
+<scroll-view scroll-y class="container">
+  <view class="header">
+    <text class="title">小红书下载器</text>
+    <text class="subtitle">粘贴链接即可下载高清图片和视频</text>
+  </view>
+
+  <view class="input-section">
+    <textarea 
+      class="url-input" 
+      placeholder="粘贴小红书链接..." 
+      placeholder-class="input-placeholder" 
+      bindinput="onInput" 
+      value="{{inputUrl}}" 
+      auto-height
+      maxlength="500"
+    />
+    <button class="parse-btn" loading="{{loading}}" bindtap="handleParse">
+      {{loading ? '解析中...' : '开始解析'}}
+    </button>
+  </view>
+
+  <view wx:if="{{error}}" class="error-msg">
+    <icon type="warn" size="20" color="#ff4d4d"></icon>
+    <text>{{error}}</text>
+  </view>
+
+  <view wx:if="{{data}}" class="result-card">
+    <!-- User Info -->
+    <view class="user-section">
+      <image wx:if="{{data.user.avatar}}" src="{{data.user.avatar}}" class="avatar"></image>
+      <view class="user-meta">
+        <text class="nickname">{{data.user.nickname}}</text>
+        <view class="type-tag">{{data.type === 'video' ? '视频笔记' : '图文笔记'}}</view>
+      </view>
+    </view>
+
+    <!-- Note Content -->
+    <view class="note-content">
+      <text class="note-title">{{data.title}}</text>
+      <text wx:if="{{data.desc}}" class="note-desc">{{data.desc}}</text>
+    </view>
+
+    <!-- Batch Download for Images -->
+    <view wx:if="{{data.type === 'normal' && data.images.length > 1}}" class="batch-section">
+      <button class="batch-btn" bindtap="handleDownloadAll">
+        <icon type="download" size="20" color="#fff" class="btn-icon"></icon>
+        <text>一键保存全部 ({{data.images.length}}张)</text>
+      </button>
+    </view>
+
+    <!-- Video Player -->
+    <view wx:if="{{data.video}}" class="media-section">
+      <video 
+        src="{{data.video}}" 
+        poster="{{data.images[0].original}}" 
+        class="video-player"
+        controls
+        show-center-play-btn
+      ></video>
+      <button class="action-btn primary" bindtap="handleDownloadVideo" data-url="{{data.video}}">
+        <icon type="download" size="18" color="#fff"></icon>
+        <text>保存视频到相册</text>
+      </button>
+    </view>
+
+    <!-- Image Grid -->
+    <view wx:else class="media-section">
+      <text class="section-title">图片预览 ({{data.images.length}})</text>
+      <view class="image-grid">
+        <view wx:for="{{data.images}}" wx:key="index" class="image-item">
+          <image 
+            src="{{item.url}}" 
+            mode="aspectFill" 
+            class="grid-img" 
+            bindtap="previewImage" 
+            data-current="{{item.original}}"
+            lazy-load
+          ></image>
+          <view class="image-overlay">
+            <button class="mini-btn" bindtap="handleDownloadImage" data-url="{{item.original}}">
+              <icon type="download" size="16" color="#fff"></icon>
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>
