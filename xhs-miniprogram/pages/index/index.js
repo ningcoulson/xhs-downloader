@@ -4,7 +4,7 @@ const app = getApp()
 // IMPORTANT: Replace this with your DEPLOYED Vercel URL
 // WeChat Mini Programs cannot access localhost directly on a real device
 // For local debugging, enable "Does not verify valid domain names" in DevTools
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'http://xhs.pwcer.com:3000';
 
 Page({
     data: {
